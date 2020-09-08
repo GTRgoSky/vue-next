@@ -50,7 +50,9 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 创建App起点
 export const createApp = ((...args) => {
+  // 这个app 就是返回的  应用程序实例 
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -59,6 +61,7 @@ export const createApp = ((...args) => {
 
   const { mount } = app
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 赋值 mount 挂载方法
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
     const component = app._component

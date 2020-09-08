@@ -34,6 +34,8 @@ import {
 import { queuePostRenderEffect } from './renderer'
 import { warn } from './warning'
 
+// InvalidateCbRegistrator =》 类型：接受一个函数（回调）
+// WatchEffect =》 类型：接受一个包含函数（回调）的函数
 export type WatchEffect = (onInvalidate: InvalidateCbRegistrator) => void
 
 export type WatchSource<T = any> = Ref<T> | ComputedRef<T> | (() => T)
@@ -135,6 +137,7 @@ export function watch<T = any, Immediate extends Readonly<boolean> = false>(
   return doWatch(source as any, cb, options)
 }
 
+// watchEffect 的核心逻辑
 function doWatch(
   source: WatchSource | WatchSource[] | WatchEffect | object,
   cb: WatchCallback | null,
@@ -289,6 +292,7 @@ function doWatch(
     }
   }
 
+  // 实现watchEffect的核心逻辑
   const runner = effect(getter, {
     lazy: true,
     onTrack,

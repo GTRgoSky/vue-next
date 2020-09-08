@@ -1,6 +1,7 @@
 # @vue/runtime-core
 
 > This package is published only for typing and building custom renderers. It is NOT meant to be used in applications.
+发布此包仅用于键入和构建自定义呈现器。它并不用于应用程序中。
 
 For full exposed APIs, see `src/index.ts`. You can also run `yarn build runtime-core --types` from repo root, which will generate an API report at `temp/runtime-core.api.md`.
 

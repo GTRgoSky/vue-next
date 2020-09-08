@@ -163,6 +163,8 @@ export function shallowReadonly<T extends object>(
   )
 }
 
+
+// 所有劫持在这里创建
 function createReactiveObject(
   target: Target,
   isReadonly: boolean,

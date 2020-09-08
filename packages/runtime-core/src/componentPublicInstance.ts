@@ -240,6 +240,7 @@ export interface ComponentRenderContext {
   _: ComponentInternalInstance
 }
 
+// 模板编译时走这里
 export const PublicInstanceProxyHandlers: ProxyHandler<any> = {
   get({ _: instance }: ComponentRenderContext, key: string) {
     const {
