@@ -117,6 +117,7 @@ export function createTransformContext(
     directiveTransforms = {},
     transformHoist = null,
     isBuiltInComponent = NOOP,
+    isCustomElement = NOOP,
     expressionPlugins = [],
     scopeId = null,
     ssr = false,
@@ -134,6 +135,7 @@ export function createTransformContext(
     directiveTransforms,
     transformHoist,
     isBuiltInComponent,
+    isCustomElement,
     expressionPlugins,
     scopeId,
     ssr,
@@ -397,6 +399,7 @@ export function traverseNode(
   }
 
   // exit transforms
+  context.currentNode = node
   let i = exitFns.length
   while (i--) {
     exitFns[i]()
