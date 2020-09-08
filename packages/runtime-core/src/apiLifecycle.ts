@@ -13,6 +13,7 @@ import { pauseTracking, resetTracking, DebuggerEvent } from '@vue/reactivity'
 
 export { onActivated, onDeactivated } from './components/KeepAlive'
 
+// 在这里注册所有hook钩子（生命周期）
 export function injectHook(
   type: LifecycleHooks,
   hook: Function & { __weh?: Function },
@@ -70,7 +71,13 @@ export const createHook = <T extends Function = () => any>(
   !isInSSRComponentSetup && injectHook(lifecycle, hook, target)
 
 export const onBeforeMount = createHook(LifecycleHooks.BEFORE_MOUNT)
+/**
+ * onMounted = (hook: T, target: ComponentInternalInstance | null = currentInstance) => {
+ *  !isInSSRComponentSetup && injectHook('m', hook, target)
+ * }
+ */
 export const onMounted = createHook(LifecycleHooks.MOUNTED)
+
 export const onBeforeUpdate = createHook(LifecycleHooks.BEFORE_UPDATE)
 export const onUpdated = createHook(LifecycleHooks.UPDATED)
 export const onBeforeUnmount = createHook(LifecycleHooks.BEFORE_UNMOUNT)

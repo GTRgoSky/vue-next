@@ -336,7 +336,7 @@ export const setRef = (
 }
 
 /**
- * The createRenderer function accepts two generic arguments:
+ * The createRenderer function accepts two generic arguments: 接受两个泛型参数
  * HostNode and HostElement, corresponding to Node and Element types in the
  * host environment. For example, for runtime-dom, HostNode would be the DOM
  * `Node` interface and HostElement would be the DOM `Element` interface.
@@ -351,8 +351,8 @@ export const setRef = (
  * ```
  */
 export function createRenderer<
-  HostNode = RendererNode,
-  HostElement = RendererElement
+  HostNode = RendererNode, // Node环境
+  HostElement = RendererElement // 主机Web环境
 >(options: RendererOptions<HostNode, HostElement>) {
   return baseCreateRenderer<HostNode, HostElement>(options)
 }

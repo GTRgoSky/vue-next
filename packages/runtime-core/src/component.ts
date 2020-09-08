@@ -470,6 +470,7 @@ export function setupComponent(
   return setupResult
 }
 
+// 只有有状态组件才会执行，也就是说函数组件并没有 setup
 function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean

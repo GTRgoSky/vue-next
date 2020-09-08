@@ -87,6 +87,7 @@ export type Plugin =
       install: PluginInstallFunction
     }
 
+// 初始化- 返回一个提供应用程序上下文的 应用程序实例 。应用程序实例挂载的整个组件树共享相同的上下文。0
 export function createAppContext(): AppContext {
   return {
     config: {
@@ -111,6 +112,7 @@ export type CreateAppFunction<HostElement> = (
   rootProps?: Data | null
 ) => App<HostElement>
 
+// 创建App起点
 export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
