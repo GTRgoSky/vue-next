@@ -25,10 +25,18 @@ const rendererOptions = extend({ patchProp, forcePatchProp }, nodeOps)
 
 // lazy create the renderer - this makes core renderer logic tree-shakable
 // in case the user only imports reactivity utilities from Vue.
+//
 let renderer: Renderer<Element> | HydrationRenderer
 
 let enabledHydration = false
 
+/** ensureRenderer() = renderer = baseCreateRenderer 返回的 {
+    render,
+    hydrate,
+    createApp: createAppAPI(render, hydrate)
+  }
+  【packages/runtime-core/src/renderer.ts】
+*/
 function ensureRenderer() {
   return renderer || (renderer = createRenderer<Node, Element>(rendererOptions))
 }
@@ -51,8 +59,10 @@ export const hydrate = ((...args) => {
 }) as RootHydrateFunction
 
 // 创建App起点
+// arg 接受的是App的包含Render函数的对象
 export const createApp = ((...args) => {
-  // 这个app 就是返回的  应用程序实例 
+  // 这个app 就是返回的  应用程序实例
+  // ensureRenderer().createApp = function createApp(rootComponent, rootProps = null)【packages/runtime-core/src/apiCreateApp.ts-116】
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -61,6 +71,7 @@ export const createApp = ((...args) => {
 
   const { mount } = app
   // 赋值 mount 挂载方法
+  // createApp(App).mount('#app')
   app.mount = (containerOrSelector: Element | string): any => {
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
@@ -70,6 +81,7 @@ export const createApp = ((...args) => {
     }
     // clear content before mounting
     container.innerHTML = ''
+    // packages/runtime-core/src/apiCreateApp.ts mount【218】
     const proxy = mount(container)
     container.removeAttribute('v-cloak')
     container.setAttribute('data-v-app', '')

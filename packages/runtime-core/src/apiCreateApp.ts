@@ -117,6 +117,7 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  // createApp(rootComponent: App[app.vue生产的一个包含Render函数的对象])
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
@@ -212,6 +213,7 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      // createApp(App).mount('#app')回调到这里
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
         if (!isMounted) {
           const vnode = createVNode(
@@ -280,6 +282,7 @@ export function createAppAPI<HostElement>(
       }
     })
 
+    // createApp(App)
     return app
   }
 }
