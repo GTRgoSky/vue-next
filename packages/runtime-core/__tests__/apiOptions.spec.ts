@@ -113,6 +113,7 @@ describe('api: options', () => {
     const spyB = jest.fn(returnThis)
     const spyC = jest.fn(returnThis)
     const spyD = jest.fn(returnThis)
+    const spyE = jest.fn(returnThis)
 
     let ctx: any
     const Comp = {
@@ -123,7 +124,10 @@ describe('api: options', () => {
           baz: {
             qux: 3
           },
-          qux: 4
+          qux: 4,
+          dot: {
+            path: 5
+          }
         }
       },
       watch: {
@@ -137,7 +141,8 @@ describe('api: options', () => {
         },
         qux: {
           handler: 'onQuxChange'
-        }
+        },
+        'dot.path': spyE
       },
       methods: {
         onFooChange: spyA,
@@ -175,6 +180,11 @@ describe('api: options', () => {
     await nextTick()
     expect(spyD).toHaveBeenCalledTimes(1)
     assertCall(spyD, 0, [5, 4])
+
+    ctx.dot.path++
+    await nextTick()
+    expect(spyE).toHaveBeenCalledTimes(1)
+    assertCall(spyE, 0, [6, 5])
   })
 
   test('watch array', async () => {
@@ -253,7 +263,16 @@ describe('api: options', () => {
         }
       },
       render() {
-        return [h(ChildA), h(ChildB), h(ChildC), h(ChildD), h(ChildE)]
+        return [
+          h(ChildA),
+          h(ChildB),
+          h(ChildC),
+          h(ChildD),
+          h(ChildE),
+          h(ChildF),
+          h(ChildG),
+          h(ChildH)
+        ]
       }
     })
 
@@ -272,19 +291,37 @@ describe('api: options', () => {
         from: 'a'
       }
     })
-    const ChildD = defineChild({
+    const ChildD = defineChild(
+      {
+        a: {
+          default: () => 0
+        }
+      },
+      'a'
+    )
+    const ChildE = defineChild({
       b: {
         from: 'c',
         default: 2
       }
     })
-    const ChildE = defineChild({
+    const ChildF = defineChild({
       b: {
         from: 'c',
         default: () => 3
       }
     })
-    expect(renderToString(h(Root))).toBe(`11123`)
+    const ChildG = defineChild({
+      b: {
+        default: 4
+      }
+    })
+    const ChildH = defineChild({
+      b: {
+        default: () => 5
+      }
+    })
+    expect(renderToString(h(Root))).toBe(`11112345`)
   })
 
   test('lifecycle', async () => {
