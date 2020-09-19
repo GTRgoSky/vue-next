@@ -42,8 +42,9 @@ export function markAttrsAccessed() {
   accessedAttrs = true
 }
 
+// render 函数执行位置
 export function renderComponentRoot(
-  instance: ComponentInternalInstance
+  instance: ComponentInternalInstance // script 的 render 对象
 ): VNode {
   const {
     type: Component,
@@ -63,7 +64,7 @@ export function renderComponentRoot(
   } = instance
 
   let result
-  currentRenderingInstance = instance
+  currentRenderingInstance = instance // 缓存实例 在 render 执行 normalizeChildren 中 用
   if (__DEV__) {
     accessedAttrs = false
   }
@@ -75,6 +76,7 @@ export function renderComponentRoot(
       const proxyToUse = withProxy || proxy
       result = normalizeVNode(
         render!.call(
+          // render 在这里执行
           proxyToUse,
           proxyToUse!,
           renderCache,

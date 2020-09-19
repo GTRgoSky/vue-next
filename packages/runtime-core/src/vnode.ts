@@ -170,6 +170,7 @@ export const blockStack: (VNode[] | null)[] = []
 let currentBlock: VNode[] | null = null
 
 /**
+ * // 这块可能是做diff标签
  * Open a block.
  * This must be called before `createBlock`. It cannot be part of `createBlock`
  * because the children of the block are evaluated before `createBlock` itself
@@ -314,6 +315,7 @@ export const createVNode = (__DEV__
   ? createVNodeWithArgsTransform
   : _createVNode) as typeof _createVNode
 
+// 创建 Virtual Dom
 function _createVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -366,6 +368,7 @@ function _createVNode(
   }
 
   // encode the vnode type information into a bitmap
+  // 创建Flag标记
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
     : __FEATURE_SUSPENSE__ && isSuspense(type)
@@ -390,10 +393,11 @@ function _createVNode(
     )
   }
 
+  // 真实的Vnode对象
   const vnode: VNode = {
     __v_isVNode: true,
     [ReactiveFlags.SKIP]: true,
-    type,
+    type, // 这里保存的是App.vue生产的render对象
     props,
     key: props && normalizeKey(props),
     ref: props && normalizeRef(props),
@@ -548,6 +552,7 @@ export function createCommentVNode(
     : createVNode(Comment, null, text)
 }
 
+// child 为 render 函数返回值 - createBlock 返回 - vnode 对象
 export function normalizeVNode(child: VNodeChild): VNode {
   if (child == null || typeof child === 'boolean') {
     // empty placeholder
@@ -561,7 +566,7 @@ export function normalizeVNode(child: VNodeChild): VNode {
     return child.el === null ? child : cloneVNode(child)
   } else {
     // strings and numbers
-    return createVNode(Text, null, String(child))
+    return createBlock(Text, null, String(child))
   }
 }
 
@@ -570,6 +575,7 @@ export function cloneIfMounted(child: VNode): VNode {
   return child.el === null ? child : cloneVNode(child)
 }
 
+// 使子节点正常化
 export function normalizeChildren(vnode: VNode, children: unknown) {
   let type = 0
   const { shapeFlag } = vnode

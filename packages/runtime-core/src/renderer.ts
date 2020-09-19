@@ -426,6 +426,7 @@ function baseCreateRenderer(
     initFeatureFlags()
   }
 
+  // 映射-dom中的方法【packages/runtime-dom/src/nodeOps.ts】
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -445,6 +446,7 @@ function baseCreateRenderer(
 
   // Note: functions inside this closure should use `const xxx = () => {}`
   // style in order to prevent being inlined by minifiers.
+  // 更新Dom操作
   const patch: PatchFn = (
     n1,
     n2,
@@ -1229,6 +1231,7 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
+    // 生成一个 instance 实例 绑定一些我们需要暴露的 key， type 为  __script 对象
     const instance: ComponentInternalInstance = (initialVNode.component = createComponentInstance(
       initialVNode,
       parentComponent,
