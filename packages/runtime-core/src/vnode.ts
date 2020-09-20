@@ -317,10 +317,10 @@ export const createVNode = (__DEV__
 
 // 创建 Virtual Dom
 function _createVNode(
-  type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
+  type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT, // 组件返回的__script对象，或者是标签明 或者是 内置type
   props: (Data & VNodeProps) | null = null,
   children: unknown = null,
-  patchFlag: number = 0,
+  patchFlag: number = 0, // diff更新标记 patchFlag > 0一定是动态节点，-1（HOIST）代表提升静态节点
   dynamicProps: string[] | null = null,
   isBlockNode = false
 ): VNode {
@@ -368,7 +368,7 @@ function _createVNode(
   }
 
   // encode the vnode type information into a bitmap
-  // 创建Flag标记
+  // 创建 类型 Flag 标记 比如ELEMENT表示普通dom，COMPONENT表示组件类型
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
     : __FEATURE_SUSPENSE__ && isSuspense(type)
@@ -397,7 +397,7 @@ function _createVNode(
   const vnode: VNode = {
     __v_isVNode: true,
     [ReactiveFlags.SKIP]: true,
-    type, // 这里保存的是App.vue生产的render对象
+    type, // 这里保存的是App.vue生产的render对象 -- __script，或者是标签明 或者是 内置type
     props,
     key: props && normalizeKey(props),
     ref: props && normalizeRef(props),
@@ -575,7 +575,7 @@ export function cloneIfMounted(child: VNode): VNode {
   return child.el === null ? child : cloneVNode(child)
 }
 
-// 使子节点正常化
+// 使子节点正常化 （这里有一个 vnode.children = children）
 export function normalizeChildren(vnode: VNode, children: unknown) {
   let type = 0
   const { shapeFlag } = vnode

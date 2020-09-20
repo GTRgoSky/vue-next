@@ -426,7 +426,7 @@ function baseCreateRenderer(
     initFeatureFlags()
   }
 
-  // 映射-dom中的方法【packages/runtime-dom/src/nodeOps.ts】
+  // 映射-dom中的方法【packages/runtime-dom/src/nodeOps.ts】 如果想通过core 重写编译能力，将方法一一映射。
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -448,10 +448,10 @@ function baseCreateRenderer(
   // style in order to prevent being inlined by minifiers.
   // 更新Dom操作
   const patch: PatchFn = (
-    n1,
+    n1, // 暂当作 oldVnode
     n2,
-    container,
-    anchor = null,
+    container, // 祖先（容器） dom 节点
+    anchor = null, // 一个存储 锚
     parentComponent = null,
     parentSuspense = null,
     isSVG = false,
@@ -459,6 +459,7 @@ function baseCreateRenderer(
   ) => {
     // patching & not same type, unmount old tree
     if (n1 && !isSameVNodeType(n1, n2)) {
+      // 如果新老节点不同 卸载老节点？
       anchor = getNextHostNode(n1)
       unmount(n1, parentComponent, parentSuspense, true)
       n1 = null
@@ -469,9 +470,10 @@ function baseCreateRenderer(
       n2.dynamicChildren = null
     }
 
+    // （————FX———— type分类 和 shapeFlag 取值从 _createVNode 来）
     const { type, ref, shapeFlag } = n2
     switch (type) {
-      case Text:
+      case Text: // 文本节点
         processText(n1, n2, container, anchor)
         break
       case Comment:
@@ -498,6 +500,7 @@ function baseCreateRenderer(
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
+          // element
           processElement(
             n1,
             n2,
@@ -509,6 +512,7 @@ function baseCreateRenderer(
             optimized
           )
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
+          // 组件
           processComponent(
             n1,
             n2,
@@ -654,6 +658,7 @@ function baseCreateRenderer(
     hostRemove(anchor!)
   }
 
+  // Element 处理 元素 的 过程
   const processElement = (
     n1: VNode | null,
     n2: VNode,
@@ -666,6 +671,7 @@ function baseCreateRenderer(
   ) => {
     isSVG = isSVG || (n2.type as string) === 'svg'
     if (n1 == null) {
+      // 无历史（oldVnode）
       mountElement(
         n2,
         container,
@@ -680,6 +686,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 初始化 挂在 mount 静态资源的vnode 在 ？type=template 返回的render 函数中生成。
   const mountElement = (
     vnode: VNode,
     container: RendererElement,
@@ -712,6 +719,7 @@ function baseCreateRenderer(
       // only do this in production since cloned trees cannot be HMR updated.
       el = vnode.el = hostCloneNode(vnode.el)
     } else {
+      // 如果是静态元素，创建 Element 标签 保存在el中（渲染 element）
       el = vnode.el = hostCreateElement(
         vnode.type as string,
         isSVG,
@@ -721,6 +729,7 @@ function baseCreateRenderer(
       // mount children first, since some props may rely on child content
       // being already rendered, e.g. `<select value>`
       if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        // 如果是文本，将 内容赋值给textContent - 这个行为是 -dom 行为，如果想有别的行为可以重写 setElementText
         hostSetElementText(el, vnode.children as string)
       } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
         mountChildren(
@@ -783,7 +792,7 @@ function baseCreateRenderer(
     if (needCallTransitionHooks) {
       transition!.beforeEnter(el)
     }
-    hostInsert(el, container, anchor)
+    hostInsert(el, container, anchor) // 这个锚 是 空节点，用于insertBefore位置 el是Element
     if (
       (vnodeHook = props && props.onVnodeMounted) ||
       needCallTransitionHooks ||
@@ -813,7 +822,7 @@ function baseCreateRenderer(
       if (treeOwnerId && treeOwnerId !== scopeId) {
         hostSetScopeId(el, treeOwnerId + '-s')
       }
-      let subTree = parentComponent.subTree
+      let subTree = parentComponent.subTree // （————FX————）
       if (__DEV__ && subTree.type === Fragment) {
         subTree =
           filterSingleRoot(subTree.children as VNodeArrayChildren) || subTree
@@ -1187,6 +1196,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 对 组件 的生命状态和行为做不同的处理
   const processComponent = (
     n1: VNode | null,
     n2: VNode,
@@ -1197,6 +1207,7 @@ function baseCreateRenderer(
     isSVG: boolean,
     optimized: boolean
   ) => {
+    // 代表第一次渲染
     if (n1 == null) {
       if (n2.shapeFlag & ShapeFlags.COMPONENT_KEPT_ALIVE) {
         ;(parentComponent!.ctx as KeepAliveContext).activate(
@@ -1218,12 +1229,13 @@ function baseCreateRenderer(
         )
       }
     } else {
+      // 需要进行新老对照
       updateComponent(n1, n2, optimized)
     }
   }
 
   const mountComponent: MountComponentFn = (
-    initialVNode,
+    initialVNode, // 原生Vnode， 当前处理的 - n2
     container,
     anchor,
     parentComponent,
@@ -1231,7 +1243,8 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
-    // 生成一个 instance 实例 绑定一些我们需要暴露的 key， type 为  __script 对象
+    // 生成一个 instance 实例 绑定一些我们需要暴露的 key， type 为  __script 对象 （这块需要单独学习实例暴露了什么 ——Fx—— ）
+    // 这个 instance 在 components 用， type 绑定了 之前的 __script 对象
     const instance: ComponentInternalInstance = (initialVNode.component = createComponentInstance(
       initialVNode,
       parentComponent,
@@ -1275,6 +1288,7 @@ function baseCreateRenderer(
       return
     }
 
+    // 创建 渲染 副作用 - 给实例绑定 update 更新时 调用
     setupRenderEffect(
       instance,
       initialVNode,
@@ -1336,6 +1350,7 @@ function baseCreateRenderer(
     optimized
   ) => {
     // create reactive effect for rendering
+    // 关于 更新后副作用对render的影响（————FX———）
     instance.update = effect(function componentEffect() {
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
