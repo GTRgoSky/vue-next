@@ -514,9 +514,9 @@ export function setupComponent(
   isInSSRComponentSetup = isSSR
 
   const { props, children, shapeFlag } = instance.vnode
-  const isStateful = shapeFlag & ShapeFlags.STATEFUL_COMPONENT
-  initProps(instance, props, isStateful, isSSR)
-  initSlots(instance, children)
+  const isStateful = shapeFlag & ShapeFlags.STATEFUL_COMPONENT // 判断当前Vode是否是 组件
+  initProps(instance, props, isStateful, isSSR) // 初始化props
+  initSlots(instance, children) // 初始化 slot
 
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
@@ -525,7 +525,7 @@ export function setupComponent(
   return setupResult
 }
 
-// 只有有状态组件才会执行，也就是说函数组件并没有 setup
+// 只有有状态的组件才会执行，也就是说函数组件并没有 setup
 function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean
@@ -553,11 +553,13 @@ function setupStatefulComponent(
   instance.accessCache = {}
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
+  // 实例上绑定一个代理（咱不做追究 ——Fx—— ）
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
+  // 判断是否是 Composition API
   const { setup } = Component
   if (setup) {
     const setupContext = (instance.setupContext =
@@ -647,6 +649,7 @@ export function registerRuntimeCompiler(_compile: any) {
   compile = _compile
 }
 
+// 完成setUp初始化， 将__script.render函数赋值给组件实例
 function finishComponentSetup(
   instance: ComponentInternalInstance,
   isSSR: boolean
@@ -673,6 +676,7 @@ function finishComponentSetup(
       }
     }
 
+    // 将__script 的 render 赋值给 组件实例 的render
     instance.render = (Component.render || NOOP) as InternalRenderFunction
 
     // for runtime-compiled render functions using `with` blocks, the render
@@ -687,6 +691,7 @@ function finishComponentSetup(
   }
 
   // support for 2.x options
+  // 对 vue2 里面的 判断是否有使用某些方法 做了兼容
   if (__FEATURE_OPTIONS_API__) {
     currentInstance = instance
     applyOptions(instance, Component)

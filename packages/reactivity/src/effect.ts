@@ -47,6 +47,7 @@ let activeEffect: ReactiveEffect | undefined
 export const ITERATE_KEY = Symbol(__DEV__ ? 'iterate' : '')
 export const MAP_KEY_ITERATE_KEY = Symbol(__DEV__ ? 'Map key iterate' : '')
 
+// 如果fn 存在 创建 副作用标示
 export function isEffect(fn: any): fn is ReactiveEffect {
   return fn && fn._isEffect === true
 }
