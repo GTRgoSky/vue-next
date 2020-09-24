@@ -126,7 +126,7 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
-  // createApp(rootComponent: App[app.vue生产的一个包含Render函数的对象])
+  // createApp(rootComponent: __script对象)
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
@@ -138,7 +138,7 @@ export function createAppAPI<HostElement>(
 
     let isMounted = false
 
-    const app: App = (context.app = {
+    const app: App = (context.app = { // Vue 实例
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
       _props: rootProps,
@@ -159,10 +159,11 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // use 逻辑
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
-        } else if (plugin && isFunction(plugin.install)) {
+        } else if (plugin && isFunction(plugin.install)) { // 如果是带有install的 Function
           installedPlugins.add(plugin)
           plugin.install(app, ...options)
         } else if (isFunction(plugin)) {
@@ -229,6 +230,7 @@ export function createAppAPI<HostElement>(
 
       // createApp(App).mount('#app')回调到这里
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
+        // 如果还没有初始化
         if (!isMounted) {
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
@@ -297,6 +299,7 @@ export function createAppAPI<HostElement>(
     })
 
     // createApp(App)
+    // app 对象 - 应用程序
     return app
   }
 }
