@@ -230,8 +230,10 @@ export interface ComponentRenderContext {
   _: ComponentInternalInstance
 }
 
-// 模板编译时走这里
+// 给 实例 instance 绑定一个代理
 export const PublicInstanceProxyHandlers: ProxyHandler<any> = {
+  // 解构获取到 instance = instance.ctx._ // 实例自身
+  // 原因: instance.ctx = { _: instance } packages\runtime-core\src\component.ts[476]
   get({ _: instance }: ComponentRenderContext, key: string) {
     const {
       ctx,
@@ -464,6 +466,7 @@ export function createRenderContext(instance: ComponentInternalInstance) {
   })
 
   // expose global properties
+  // 将 app.config.globalProperties 做了劫持
   const { globalProperties } = instance.appContext.config
   Object.keys(globalProperties).forEach(key => {
     Object.defineProperty(target, key, {

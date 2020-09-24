@@ -1246,8 +1246,9 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
-    // 生成一个 instance 实例 绑定一些我们需要暴露的 key， type 为  __script 对象 （这块需要单独学习实例暴露了什么 ——Fx—— ）
+    // 生成一个 instance 实例 绑定一系列我们需要的 属性. type 为  __script 对象 （这块需要单独学习实例暴露了什么 ——Fx—— ）
     // 这个 instance 在 components 用， type 绑定了 之前的 __script 对象
+    // 这里给 vnode 的 component 赋值, 指向的是 instance 实例
     const instance: ComponentInternalInstance = (initialVNode.component = createComponentInstance(
       initialVNode,
       parentComponent,

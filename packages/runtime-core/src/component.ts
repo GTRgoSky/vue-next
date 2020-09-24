@@ -400,6 +400,7 @@ export function createComponentInstance(
 ) {
   const type = vnode.type as ConcreteComponent
   // inherit parent app context - or - if root, adopt from root vnode
+  // 一直往上指向,最终应该时指向root- 如果当前时root则返回 createAppContext 的返回值
   const appContext =
     (parent ? parent.appContext : vnode.appContext) || emptyAppContext
 
@@ -444,7 +445,7 @@ export function createComponentInstance(
     setupContext: null,
 
     // suspense related
-    suspense,
+    suspense, // 插入组件节点
     suspenseId: suspense ? suspense.pendingId : 0,
     asyncDep: null,
     asyncResolved: false,
@@ -468,6 +469,7 @@ export function createComponentInstance(
     rtc: null,
     ec: null
   }
+
   if (__DEV__) {
     instance.ctx = createRenderContext(instance)
   } else {
@@ -553,7 +555,7 @@ function setupStatefulComponent(
   instance.accessCache = {}
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
-  // 实例上绑定一个代理（咱不做追究 ——Fx—— ）
+  // 实例上 绑定一个代理（暂时不做追究 ——Fx—— ）
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
@@ -752,6 +754,7 @@ function createSetupContext(instance: ComponentInternalInstance): SetupContext {
       }
     })
   } else {
+    // 这里是 对外暴露的三个属性
     return {
       attrs: instance.attrs,
       slots: instance.slots,
