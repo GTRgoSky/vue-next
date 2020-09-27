@@ -69,6 +69,7 @@ const arrayInstrumentations: Record<string, Function> = {}
   }
 })
 
+// 这里是 reactive 的 get 代理方法
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: Target, key: string | symbol, receiver: object) {
     if (key === ReactiveFlags.IS_REACTIVE) {

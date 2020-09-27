@@ -141,6 +141,7 @@ export const toHandlerKey = cacheStringFunction(
   (str: string) => (str ? `on${capitalize(str)}` : ``)
 )
 
+// 比较一个值是否已经改变，考虑到NaN。
 // compare whether a value has changed, accounting for NaN.
 export const hasChanged = (value: any, oldValue: any): boolean =>
   value !== oldValue && (value === value || oldValue === oldValue)

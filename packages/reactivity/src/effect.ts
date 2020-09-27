@@ -165,6 +165,7 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   }
 }
 
+// 触发器
 export function trigger(
   target: object,
   type: TriggerOpTypes,

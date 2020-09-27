@@ -409,7 +409,8 @@ export function createComponentInstance(
 ) {
   const type = vnode.type as ConcreteComponent
   // inherit parent app context - or - if root, adopt from root vnode
-  // 一直往上指向,最终应该时指向root- 如果当前时root则返回 createAppContext 的返回值
+  // 一直往上指向,最终应该时指向root- 如果当前时root则返回 vnode.appContext 的返回值
+  // vnode.appContext 这个在 创建 app 应用程序时被创建, 是整个项目上下文自身(全局上下文)
   const appContext =
     (parent ? parent.appContext : vnode.appContext) || emptyAppContext
 

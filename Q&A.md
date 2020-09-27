@@ -19,6 +19,23 @@
 3. 将 isMounted 标记为 true
 4. 返回 vnode 的 component 的 proxy 代理
 
+## Q: instance 有什么用
+## A:
+1. 当前组件的实例 (也就是options模式下的 this绑定在他的ctx下 )
+    1.1 绑定过程: applyOptions [packages\runtime-core\src\componentOptions.ts]
+2. 拥有:
+    2.1 当前组件的 Vnode, 
+    2.2 父组件实例 parent
+    2.3 type(即_script对象)
+    2.4 appContext 全局上下文
+    2.5 ctx : { _:instance }一个指向自身的对象 (在 setupStatefulComponent 会创建劫持 劫持 ctx 对象) [这个劫持的作用 在操作 this 时会产生劫持]
+    2.6 proxy 创建一个实例 ctx 属性的代理
+    2.7 accessCache 创建代理缓存,若有缓存则直接从缓存取值
+
+## Q: 双向绑定在哪里创建
+## A:
+
+
 ## app.config.globalProperties 为什么不能在setUp中引用
 
 ## Instance 创建并暴露的逻辑、
