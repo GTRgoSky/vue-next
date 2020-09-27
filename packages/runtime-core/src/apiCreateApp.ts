@@ -124,11 +124,12 @@ export function createAppAPI<HostElement>(
       rootProps = null
     }
 
-    const context = createAppContext()
+    const context = createAppContext() // 创建一个空的上下文对象
     const installedPlugins = new Set()
 
     let isMounted = false
 
+    // 创建 app 对象,并和 上下文 context.app 相互指向
     const app: App = (context.app = { // Vue 实例
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -224,6 +225,7 @@ export function createAppAPI<HostElement>(
           )
           // store app context on the root VNode.
           // this will be set on the root instance on initial mount.
+          // 这里给 当前 vnode 的上下文赋值
           vnode.appContext = context
 
           // HMR root reload

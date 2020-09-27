@@ -1397,6 +1397,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
+          // 更新DOM
           patch(
             null,
             subTree,

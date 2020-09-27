@@ -55,6 +55,7 @@ class RefImpl<T> {
   }
 
   get value() {
+    // track 监听轨迹 存贮 副作用
     track(toRaw(this), TrackOpTypes.GET, 'value')
     return this._value
   }
@@ -75,6 +76,7 @@ function createRef(rawValue: unknown, shallow = false) {
   return new RefImpl(rawValue, shallow)
 }
 
+// 触发所有 ref 的 更新
 export function triggerRef(ref: Ref) {
   trigger(ref, TriggerOpTypes.SET, 'value', __DEV__ ? ref.value : void 0)
 }
