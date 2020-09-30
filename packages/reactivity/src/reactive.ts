@@ -13,10 +13,10 @@ import {
 import { UnwrapRef, Ref } from './ref'
 
 export const enum ReactiveFlags {
-  SKIP = '__v_skip',
-  IS_REACTIVE = '__v_isReactive',
-  IS_READONLY = '__v_isReadonly',
-  RAW = '__v_raw'
+  SKIP = '__v_skip', // 跳过 不进入 observe(观察)
+  IS_REACTIVE = '__v_isReactive', // 是一个reactive
+  IS_READONLY = '__v_isReadonly', // 只读
+  RAW = '__v_raw' // 原生对象
 }
 
 export interface Target {

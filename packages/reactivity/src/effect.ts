@@ -47,7 +47,7 @@ let activeEffect: ReactiveEffect | undefined
 export const ITERATE_KEY = Symbol(__DEV__ ? 'iterate' : '')
 export const MAP_KEY_ITERATE_KEY = Symbol(__DEV__ ? 'Map key iterate' : '')
 
-// 如果fn 存在 创建 副作用标示
+// 如果fn 存在 且具有副作用标示 _isEffect 返回true 表示具有副作用。
 export function isEffect(fn: any): fn is ReactiveEffect {
   return fn && fn._isEffect === true
 }
@@ -202,6 +202,7 @@ export function trigger(
   } else {
     // schedule runs for SET | ADD | DELETE
     if (key !== void 0) {
+      // depsMap.get(key) === dep
       add(depsMap.get(key))
     }
 
@@ -214,6 +215,7 @@ export function trigger(
             add(depsMap.get(MAP_KEY_ITERATE_KEY))
           }
         } else if (isIntegerKey(key)) {
+          // 添加了新索引
           // new index added to array -> length changes
           add(depsMap.get('length'))
         }

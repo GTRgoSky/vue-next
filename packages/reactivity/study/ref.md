@@ -38,7 +38,7 @@ const r = ref(rawValue, [shallow = false])
 ### shallowRef()
 
     1. 执行createRef(rawValue, true), 返回一个不被 响应式代理 的双向绑定（但是也加入到了副作用数组中）。但是强制更新或者其他响应式更新时，会更新它
-    原因是 this._value = _shallow = true ? _rawValue : convert(_rawValue);
+    原因是 this._value = _shallow === true ? _rawValue : convert(_rawValue);
     所以在用 ref.value.xxx = xxx 时，不会进入 ref 的set逻辑。
     因为劫持的是 value。
     2. 如果 rawValue 是一个 基础类型则不受约束
@@ -54,7 +54,7 @@ const r = ref(rawValue, [shallow = false])
 
 ### proxyRefs(objectWithRefs)
 
-    判断 objectWithRefs 是否是一个 isReactive，如果是直接返回。
+    判断 objectWithRefs 是否是一个 Reactive，如果是直接返回。
     若不是，返回一个 objectWithRefs 的代理：
     get: 返回一个 unref(target.key)
     set: 若 oldValue 是一个 ref 且 newValue 不是一个 ref 则 oldValue.value = newValue
@@ -79,3 +79,18 @@ customRef((track, trigger) => {
     }
   })
 ```
+
+### toRef
+> 可以用来为一个 reactive 对象的属性创建一个 ref。这个 ref 可以被传递并且能够保持响应性。
+
+    1. 如果是 Ref 直接返回该 ref
+    2. 否则进入 ObjectRefImpl 
+    3. 创建 __v_isRef = true，接受 object 和 key
+    4. 获取直接返回 this._object[this._key]， 赋值直接 this._object[this._key] = newVal
+    5. 因为 object 是一个 reactive 对象，所以此功能只是给返回对象 打了一个 __v_isRef 标签。
+    其余逻辑走的还是 reactive 对象的逻辑
+
+### toRefs 
+> 把一个响应式对象转换成普通对象，该普通对象的每个 property 都是一个 ref ，和响应式对象 property 一一对应。
+
+    实际是便利传入对象的可枚举属性，然后用 toRef 进行处理
