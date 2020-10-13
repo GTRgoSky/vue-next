@@ -26,6 +26,7 @@ import {
 } from '@vue/shared'
 import { isRef } from './ref'
 
+// 提取 Symbol 对象中的 以symbol为key的 值
 const builtInSymbols = new Set(
   Object.getOwnPropertyNames(Symbol)
     .map(key => (Symbol as any)[key])
@@ -69,6 +70,7 @@ const arrayInstrumentations: Record<string, Function> = {}
   }
 })
 
+// 这里是 reactive 的 get 代理方法
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: Target, key: string | symbol, receiver: object) {
     if (key === ReactiveFlags.IS_REACTIVE) {

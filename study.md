@@ -76,11 +76,12 @@ export function render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 ```
     2. createApp(__script) => ensureRenderer().createApp(...args)
-    packages\runtime-dom\src\index.ts -> createApp 初始化，接受一个祖先 Render 函数对象
+        packages\runtime-dom\src\index.ts -> createApp 初始化，接受一个祖先 Render 函数对象
         2.1 调用 ensureRenderer 方法，返回一个renderer函数
         2.2 renderer 函数 =  packages\runtime-core\src\renderer.ts -> createRenderer 接受一个 rendererOptions ，rendererOptions参数是为了解释runtime-core的编译器（packages/runtime-dom/src/nodeOps.ts）【对应行为】
         2.3 createRenderer 返回 baseCreateRenderer 函数 接受参数为上一步的 rendererOptions，并在内部对上述定义行为映射 core 中的对应方法 【427】
         2.4 并最终返回一个 createApp = createAppAPI(render, hydrate) 接受 baseCreateRenderer 生成的render = 返一个 可以返回 Vue 对象 的方法
+
 ---------
     3. createApp(__script).mount('#app'); 
     在 packages/runtime-dom/src/index.ts 的 createApp  执行 const app = ensureRenderer().createApp(...args) 触发了上述方法 
@@ -198,7 +199,7 @@ export const createApp = ((...args) => {
         7.2 hostSetElementText 映射 setElementText 将文本内容插入标签
         7.3 hostInsert 映射 insert 将 dom 使用 insertBefore 插入对应位置
 
-    -- 整个流程还没有走完
+    -- 整个流程还没有走完 [patch的整套逻辑]
 
 ------
  

@@ -17,6 +17,7 @@ export interface ReactiveEffect<T = any> {
   raw: () => T
   deps: Array<Dep>
   options: ReactiveEffectOptions
+  allowRecurse: boolean
 }
 
 export interface ReactiveEffectOptions {
@@ -47,7 +48,7 @@ let activeEffect: ReactiveEffect | undefined
 export const ITERATE_KEY = Symbol(__DEV__ ? 'iterate' : '')
 export const MAP_KEY_ITERATE_KEY = Symbol(__DEV__ ? 'Map key iterate' : '')
 
-// 如果fn 存在 创建 副作用标示
+// 如果fn 存在 且具有副作用标示 _isEffect 返回true 表示具有副作用。
 export function isEffect(fn: any): fn is ReactiveEffect {
   return fn && fn._isEffect === true
 }
@@ -101,6 +102,7 @@ function createReactiveEffect<T = any>(
     }
   } as ReactiveEffect
   effect.id = uid++
+  effect.allowRecurse = !!options.allowRecurse
   effect._isEffect = true
   effect.active = true
   effect.raw = fn
@@ -137,6 +139,7 @@ export function resetTracking() {
   shouldTrack = last === undefined ? true : last
 }
 
+// 追踪器
 export function track(target: object, type: TrackOpTypes, key: unknown) {
   if (!shouldTrack || activeEffect === undefined) {
     return
@@ -163,6 +166,7 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   }
 }
 
+// 触发器
 export function trigger(
   target: object,
   type: TriggerOpTypes,
@@ -181,7 +185,7 @@ export function trigger(
   const add = (effectsToAdd: Set<ReactiveEffect> | undefined) => {
     if (effectsToAdd) {
       effectsToAdd.forEach(effect => {
-        if (effect !== activeEffect || effect.options.allowRecurse) {
+        if (effect !== activeEffect || effect.allowRecurse) {
           effects.add(effect)
         }
       })
@@ -201,6 +205,7 @@ export function trigger(
   } else {
     // schedule runs for SET | ADD | DELETE
     if (key !== void 0) {
+      // depsMap.get(key) === dep
       add(depsMap.get(key))
     }
 
@@ -213,6 +218,7 @@ export function trigger(
             add(depsMap.get(MAP_KEY_ITERATE_KEY))
           }
         } else if (isIntegerKey(key)) {
+          // 添加了新索引
           // new index added to array -> length changes
           add(depsMap.get('length'))
         }

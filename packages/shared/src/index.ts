@@ -86,6 +86,7 @@ export const toRawType = (value: unknown): string => {
 export const isPlainObject = (val: unknown): val is object =>
   toTypeString(val) === '[object Object]'
 
+// key 是否是一个有意义的字符串
 export const isIntegerKey = (key: unknown) =>
   isString(key) &&
   key !== 'NaN' &&
@@ -136,6 +137,7 @@ export const capitalize = cacheStringFunction(
   }
 )
 
+// 比较一个值是否已经改变，考虑到NaN。
 // compare whether a value has changed, accounting for NaN.
 export const hasChanged = (value: any, oldValue: any): boolean =>
   value !== oldValue && (value === value || oldValue === oldValue)

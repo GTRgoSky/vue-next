@@ -74,7 +74,16 @@ export interface AppContext {
   components: Record<string, Component>
   directives: Record<string, Directive>
   provides: Record<string | symbol, any>
-  reload?: () => void // HMR only
+  /**
+   * Flag for de-optimizing props normalization
+   * @internal
+   */
+  deopt?: boolean
+  /**
+   * HMR only
+   * @internal
+   */
+  reload?: () => void
 }
 
 type PluginInstallFunction = (app: App, ...options: any[]) => any
@@ -117,19 +126,21 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
-  // createApp(rootComponent: App[app.vue生产的一个包含Render函数的对象])
+  // createApp(rootComponent: __script对象)
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
       rootProps = null
     }
 
-    const context = createAppContext()
+    const context = createAppContext() // 创建一个空的上下文对象
     const installedPlugins = new Set()
 
     let isMounted = false
 
+    // 创建 app 对象,并和 上下文 context.app 相互指向
     const app: App = (context.app = {
+      // Vue 实例
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
       _props: rootProps,
@@ -150,10 +161,12 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // use 逻辑
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
         } else if (plugin && isFunction(plugin.install)) {
+          // 如果是带有install的 Function
           installedPlugins.add(plugin)
           plugin.install(app, ...options)
         } else if (isFunction(plugin)) {
@@ -172,6 +185,11 @@ export function createAppAPI<HostElement>(
         if (__FEATURE_OPTIONS_API__) {
           if (!context.mixins.includes(mixin)) {
             context.mixins.push(mixin)
+            // global mixin with props/emits de-optimizes props/emits
+            // normalization caching.
+            if (mixin.props || mixin.emits) {
+              context.deopt = true
+            }
           } else if (__DEV__) {
             warn(
               'Mixin has already been applied to target app' +
@@ -215,6 +233,7 @@ export function createAppAPI<HostElement>(
 
       // createApp(App).mount('#app')回调到这里
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
+        // 如果还没有初始化
         if (!isMounted) {
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
@@ -222,6 +241,7 @@ export function createAppAPI<HostElement>(
           )
           // store app context on the root VNode.
           // this will be set on the root instance on initial mount.
+          // 这里给 当前 vnode 的上下文赋值
           vnode.appContext = context
 
           // HMR root reload
@@ -283,6 +303,7 @@ export function createAppAPI<HostElement>(
     })
 
     // createApp(App)
+    // app 对象 - 应用程序
     return app
   }
 }
