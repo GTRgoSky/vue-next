@@ -139,6 +139,7 @@ export function resetTracking() {
   shouldTrack = last === undefined ? true : last
 }
 
+// 追踪器
 export function track(target: object, type: TrackOpTypes, key: unknown) {
   if (!shouldTrack || activeEffect === undefined) {
     return

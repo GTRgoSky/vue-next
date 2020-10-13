@@ -140,7 +140,8 @@ function createReactiveObject(
         targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
     )
 
-    // 代理地图 以 target 为key 存储 代理
+    // 代理地图 以 target 为key 存储 目标对象的 代理
+    // 用途1： 拥有目标函数的缓存功能，节省开支
     proxyMap.set(target, proxy)
     return proxy
 }
