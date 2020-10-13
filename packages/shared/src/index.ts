@@ -86,6 +86,7 @@ export const toRawType = (value: unknown): string => {
 export const isPlainObject = (val: unknown): val is object =>
   toTypeString(val) === '[object Object]'
 
+// key 是否是一个有意义的字符串
 export const isIntegerKey = (key: unknown) =>
   isString(key) &&
   key !== 'NaN' &&

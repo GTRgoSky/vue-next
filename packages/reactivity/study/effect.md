@@ -171,9 +171,11 @@ function resetTracking() {
 ```
 
 ## track(target, type, key) - 追踪器
+> 以 target 和 key 为 key值 创建一个更新行为栈
+
     1. 如果 shouldTrack == false || activeEffect 不存在 直接返回不创建
-    2. 在targetMap 中 以 target 为 key 创建 depsMap
-    3. 在depsMap 中 以 key 为 key值 创建 dep: Set
+    2. 在 targetMap 中 以 target 为 key 创建 depsMap
+    3. 在 depsMap 中 以 key 为 key值 创建 dep: Set
     4. 判断dep 是否含有 当前激活的 activeEffect 没有下一步:
     5. dep.add(activeEffect) -- activeEffect.deps.push(dep); 一个相互存储
         dep以Set形式存储属于当前key值得所有DOM副作用
