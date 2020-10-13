@@ -554,6 +554,7 @@ function setupStatefulComponent(
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
   // 实例上绑定一个代理（咱不做追究 ——Fx—— ）
+  // 这个代理 劫持了 instance.ctx 他实际在 vue2的兼容中有作用。 instance.ctx  = {_: instance}
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
@@ -567,6 +568,7 @@ function setupStatefulComponent(
 
     currentInstance = instance
     pauseTracking()
+    // 这里是 setUp 返回 参数 的集合
     const setupResult = callWithErrorHandling(
       setup,
       instance,
@@ -736,6 +738,7 @@ const attrHandlers: ProxyHandler<Data> = {
   }
 }
 
+// 这个就是setUp暴露的第二个参数 ctx
 function createSetupContext(instance: ComponentInternalInstance): SetupContext {
   if (__DEV__) {
     // We use getters in dev in case libs like test-utils overwrite instance

@@ -66,6 +66,7 @@ export function callWithErrorHandling(
 ) {
   let res
   try {
+    // setup真实返回 参数集合
     res = args ? fn(...args) : fn()
   } catch (err) {
     handleError(err, instance, type)
