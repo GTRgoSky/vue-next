@@ -7,6 +7,7 @@ import { CollectionTypes } from './collectionHandlers'
 declare const RefSymbol: unique symbol
 
 export interface Ref<T = any> {
+  value: T
   /**
    * Type differentiator only.
    * We need this to be in public d.ts but don't want it to show up in IDE
@@ -14,7 +15,10 @@ export interface Ref<T = any> {
    */
   // RefSymbol 属性为 true
   [RefSymbol]: true
-  value: T
+  /**
+   * @internal
+   */
+  _shallow?: boolean
 }
 
 export type ToRefs<T = any> = { [K in keyof T]: Ref<T[K]> }
@@ -50,7 +54,7 @@ class RefImpl<T> {
 
   public readonly __v_isRef = true
 
-  constructor(private _rawValue: T, private readonly _shallow = false) {
+  constructor(private _rawValue: T, public readonly _shallow = false) {
     this._value = _shallow ? _rawValue : convert(_rawValue)
   }
 
@@ -78,7 +82,7 @@ function createRef(rawValue: unknown, shallow = false) {
 
 // 触发所有 ref 的 更新
 export function triggerRef(ref: Ref) {
-  trigger(ref, TriggerOpTypes.SET, 'value', __DEV__ ? ref.value : void 0)
+  trigger(toRaw(ref), TriggerOpTypes.SET, 'value', __DEV__ ? ref.value : void 0)
 }
 
 export function unref<T>(ref: T): T extends Ref<infer V> ? V : T {
