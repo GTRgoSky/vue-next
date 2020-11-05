@@ -26,7 +26,7 @@ import {
 } from '@vue/shared'
 import { isRef } from './ref'
 
-// 提取 Symbol 对象中的 以symbol为key的 值 
+// 提取 Symbol 对象中的 以symbol为key的 值
 const builtInSymbols = new Set(
   Object.getOwnPropertyNames(Symbol)
     .map(key => (Symbol as any)[key])
