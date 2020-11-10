@@ -217,3 +217,7 @@ packages\runtime-core\src\componentProxy.ts -> PublicInstanceProxyHandlers 方�
 
 ## watchEffect逻辑
 packages\runtime-core\src\apiWatch.ts -> watch方法（118）
+
+## Block VNode 创建过程:
+https://segmentfault.com/a/1190000024569143
+「Vue3」针对靶向更新而提出的概念，它的本质是动态节点对应的 VNode

@@ -70,6 +70,7 @@ export function renderComponentRoot(
   }
   try {
     let fallthroughAttrs
+    // 在这里执行 render 函数，为当前组件实例构造整个 VNode Tree
     if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
       // withProxy is a proxy with a different `has` trap only for
       // runtime-compiled render functions using `with` block.
