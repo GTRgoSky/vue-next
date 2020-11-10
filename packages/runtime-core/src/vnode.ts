@@ -183,8 +183,17 @@ let currentBlock: VNode[] | null = null
  * ```
  * disableTracking is true when creating a v-for fragment block, since a v-for
  * fragment always diffs its children.
- *
  * @private
+ */
+// 为当前 Vnode 初始化一个数组 currentBlock 来存放 Block Vnode
+/**
+ * 
+ * @param disableTracking 
+ * 当存在 v-for 形成的 VNode 时，它的 render 函数中的 openBlock() 函数形参 disableTracking 就是 true。
+ * 它不需要靶向更新，来优化更新过程
+ * 因为：靶向更新的本质是为了从一颗存在动态、静态节点的 VNode Tree 中筛选出动态的节点形成 Block Tree，
+ * 即 dynamicChildren，然后在 patch 时实现精准、快速的更新。
+ * 所以，显然 v-for 形成的 VNode Tree 它不需要靶向更新 它在 patch 时会经历完整的 diff 过程
  */
 export function openBlock(disableTracking = false) {
   blockStack.push((currentBlock = disableTracking ? null : []))
@@ -225,7 +234,11 @@ export function setBlockTracking(value: number) {
  * Create a block root vnode. Takes the same exact arguments as `createVNode`.
  * A block root keeps track of dynamic nodes within the block in the
  * `dynamicChildren` array.
- *
+ *  创建一个块根vnode。接受与‘createVNode’完全相同的参数的块根跟踪块内的动态节点
+    dynamicChildren 数组
+    dynamicChildren 属性则是衍生于 Block VNode
+    它也就是充当着靶向更新中的靶的角色
+    Block VNode: 「Vue3」针对靶向更新而提出的概念，它的本质是动态节点对应的 VNode
  * @private
  */
 export function createBlock(
@@ -414,9 +427,11 @@ function _createVNode(
     target: null,
     targetAnchor: null,
     staticCount: 0,
-    shapeFlag,
-    patchFlag,
+    shapeFlag, // 标签类型标识
+    patchFlag, // 标签属性标识
     dynamicProps,
+    // dynamicChildren 用来承接整个 VNode Tree 中的所有动态节点 
+    // dynamicChildren 属性衍生于 Block VNode
     dynamicChildren: null,
     appContext: null
   }
@@ -436,15 +451,20 @@ function _createVNode(
   }
 
   if (
+    // sholdTrack 大于 0，即没有 v-once 指令下的 VNode。
     shouldTrack > 0 &&
     // avoid a block node from tracking itself
+    // isBlockNode 是否为 Block Node
     !isBlockNode &&
     // has current parent block
+    // currentBlock 为数组时才创建 Block Node，对于 v-for 场景下，curretBlock 为 null，它不需要靶向更新。
     currentBlock &&
     // presence of a patch flag indicates this node needs patching on updates.
     // component nodes also should always be patched, because even if the
     // component doesn't need to update, it needs to persist the instance on to
     // the next vnode so that it can be properly unmounted later.
+    // patchFlag 有意义且不为 32 事件监听，只有事件监听情况时事件监听会被缓存。
+    // 是组件的时候，必须为 Block Node，这是为了保证下一个 VNode 的正常卸载。
     (patchFlag > 0 || shapeFlag & ShapeFlags.COMPONENT) &&
     // the EVENTS flag is only for hydration and if it is the only flag, the
     // vnode should not be considered dynamic due to handler caching.
