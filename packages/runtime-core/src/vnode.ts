@@ -21,7 +21,7 @@ import {
   isClassComponent
 } from './component'
 import { RawSlots } from './componentSlots'
-import { isProxy, Ref, toRaw, ReactiveFlags } from '@vue/reactivity'
+import { isProxy, Ref, toRaw, ReactiveFlags, isRef } from '@vue/reactivity'
 import { AppContext } from './apiCreateApp'
 import {
   SuspenseImpl,
@@ -187,8 +187,8 @@ let currentBlock: VNode[] | null = null
  */
 // 为当前 Vnode 初始化一个数组 currentBlock 来存放 Block Vnode
 /**
- * 
- * @param disableTracking 
+ *
+ * @param disableTracking
  * 当存在 v-for 形成的 VNode 时，它的 render 函数中的 openBlock() 函数形参 disableTracking 就是 true。
  * 它不需要靶向更新，来优化更新过程
  * 因为：靶向更新的本质是为了从一颗存在动态、静态节点的 VNode Tree 中筛选出动态的节点形成 Block Tree，
@@ -318,9 +318,9 @@ const normalizeKey = ({ key }: VNodeProps): VNode['key'] =>
 
 const normalizeRef = ({ ref }: VNodeProps): VNodeNormalizedRefAtom | null => {
   return (ref != null
-    ? isArray(ref)
-      ? ref
-      : { i: currentRenderingInstance, r: ref }
+    ? isString(ref) || isRef(ref) || isFunction(ref)
+      ? { i: currentRenderingInstance, r: ref }
+      : ref
     : null) as any
 }
 
@@ -430,7 +430,7 @@ function _createVNode(
     shapeFlag, // 标签类型标识
     patchFlag, // 标签属性标识
     dynamicProps,
-    // dynamicChildren 用来承接整个 VNode Tree 中的所有动态节点 
+    // dynamicChildren 用来承接整个 VNode Tree 中的所有动态节点
     // dynamicChildren 属性衍生于 Block VNode
     dynamicChildren: null,
     appContext: null
