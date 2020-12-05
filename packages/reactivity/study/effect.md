@@ -330,3 +330,8 @@ export function trigger(
     14. resetTracking() 删除当前追踪状态
     15. activeEffect = effectStack[effectStack.length - 1] 为将激活的副作用赋值
     16. 下一次 track
+  
+## 补充：
+  如果单独使用reactivity模块。
+  当你生命一个副作用函数后，你在副作用函数中使用了ref/reactive对象，则这个副作用回调将会绑定在该对象的Dep中进行监听。
+  同理，这个副作用的Dep将会包含这些对象
