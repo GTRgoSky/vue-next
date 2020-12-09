@@ -681,6 +681,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     isSVG = isSVG || (n2.type as string) === 'svg'
+    // 可以看到，processElement 在处理更新的情况时，实际上会调用 patchElement 函数。
     if (n1 == null) {
       // 无历史（oldVnode）
       mountElement(
@@ -991,6 +992,8 @@ function baseCreateRenderer(
       )
     }
 
+    // 对于靶向更新的处理很是简单，即如果此时 n2（newVNode） 的 dynamicChildren 存在时，
+    // 直接更新 dynamicChildren，不需要处理其他 VNode
     const areChildrenSVG = isSVG && n2.type !== 'foreignObject'
     if (dynamicChildren) {
       patchBlockChildren(
@@ -1039,6 +1042,8 @@ function baseCreateRenderer(
     parentSuspense,
     isSVG
   ) => {
+    // patchBlockChildren 会遍历 newChildren，
+    // 即 dynamicChildren 来处理每一个同级别的 oldVNode 和 newVNode，以及它们作为参数来调用 patch 函数
     for (let i = 0; i < newChildren.length; i++) {
       const oldVNode = oldChildren[i]
       const newVNode = newChildren[i]
