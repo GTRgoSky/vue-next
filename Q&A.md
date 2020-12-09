@@ -35,6 +35,9 @@
 ## Q: 双向绑定在哪里创建
 ## A:
 
+## Q: setup得参数怎么传入得
+## A：
+1. 文件packages\runtime-core\src\component.ts【569 -> 745】
 
 ## app.config.globalProperties 为什么不能在setUp中引用
 
