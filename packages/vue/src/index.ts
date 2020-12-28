@@ -1,3 +1,4 @@
+// 打包入口文件
 // This entry is the "full-build" that includes both the runtime
 // and the compiler, and supports on-the-fly compilation of the template option.
 import { initDev } from './dev'

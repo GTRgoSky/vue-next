@@ -449,7 +449,7 @@ function baseCreateRenderer(
   // 更新Dom操作
   const patch: PatchFn = (
     n1, // 暂当作 oldVnode
-    n2,
+    n2, // 新的Vnode
     container, // 祖先（容器） dom 节点
     anchor = null, // 一个存储 锚
     parentComponent = null,
@@ -1376,6 +1376,7 @@ function baseCreateRenderer(
         if (__DEV__) {
           startMeasure(instance, `render`)
         }
+
         const subTree = (instance.subTree = renderComponentRoot(instance))
         if (__DEV__) {
           endMeasure(instance, `render`)
@@ -1399,7 +1400,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
-          // 更新DOM
+          // 更新DOM--转换vnode为dom的实际操作函数
           patch(
             null,
             subTree,
@@ -2211,12 +2212,15 @@ function baseCreateRenderer(
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
 
+  // Vdom - DOM
+  // container - 宿主函数
   const render: RootRenderFunction = (vnode, container) => {
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
     } else {
+      // container._vnode 上一次的虚拟DOM
       patch(container._vnode || null, vnode, container)
     }
     flushPostFlushCbs()
@@ -2245,6 +2249,7 @@ function baseCreateRenderer(
     >)
   }
 
+  // 渲染器
   return {
     render,
     hydrate,

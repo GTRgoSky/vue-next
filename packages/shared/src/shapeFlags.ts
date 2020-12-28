@@ -1,3 +1,4 @@
+//  针对 VNode 的 type 进行了更详细的分类，便于在 patch 阶段，根据不同的类型执行相应的逻辑。
 export const enum ShapeFlags {
   // 位运算，1 << n   2^n 次方
   ELEMENT = 1,
