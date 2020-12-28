@@ -30,9 +30,10 @@ execa(
     '-wc',
     '--environment',
     [
-      `COMMIT:${commit}`,
-      `TARGET:${target}`,
-      `FORMATS:${formats || 'global'}`,
+      `COMMIT:${commit}`, //
+      `TARGET:${target}`, // 目标--要打包的目录
+      // cjs - common-node; umd - AMD + UMD 兼容- 浏览器; esm - ES6
+      `FORMATS:${formats || 'global'}`, // 格式 - global是umd
       sourceMap ? `SOURCE_MAP:true` : ``
     ]
       .filter(Boolean)

@@ -15,6 +15,7 @@
  *
  * Check the `patchElement` function in '../../runtime-core/src/renderer.ts' to see how the
  * flags are handled during diff.
+ * patchFlags 用于标识节点更新的类型，用于运行时优化。
  */
 export const enum PatchFlags {
   /**

@@ -44,3 +44,5 @@
 ## Instance 创建并暴露的逻辑、
 
 ## 如何兼容Vue2.0
+
+# ShapeFlags 和 PatchFlags 区别
