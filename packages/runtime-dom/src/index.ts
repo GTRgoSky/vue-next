@@ -70,10 +70,13 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
-  app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
-    // 赋值 mount 挂载方法
+
   // 赋值 mount 挂载方法
   // createApp(App).mount('#app')
+  app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 赋值 mount 挂载方法
+    // 赋值 mount 挂载方法
+    // createApp(App).mount('#app')
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
     const component = app._component

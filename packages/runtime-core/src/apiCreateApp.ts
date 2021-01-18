@@ -139,8 +139,9 @@ export function createAppAPI<HostElement>(
     let isMounted = false
 
     // 创建 app 对象,并和 上下文 context.app 相互指向
-    const app: App = (context.app = { // Vue 实例
-    // 创建 app 对象（应用程序实例）,并和 上下文 context.app 相互指向
+    const app: App = (context.app = {
+      // Vue 实例
+      // 创建 app 对象（应用程序实例）,并和 上下文 context.app 相互指向
       // Vue 实例
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -166,7 +167,8 @@ export function createAppAPI<HostElement>(
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
-        } else if (plugin && isFunction(plugin.install)) { // 如果是带有install的 Function
+        } else if (plugin && isFunction(plugin.install)) {
+          // 如果是带有install的 Function
           installedPlugins.add(plugin)
           plugin.install(app, ...options)
         } else if (isFunction(plugin)) {
