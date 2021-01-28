@@ -123,6 +123,7 @@ type NormalizedProp =
 
 // normalized value is a tuple of the actual normalized options
 // and an array of prop keys that need value casting (booleans and defaults)
+// FX-- 创建 Props
 export type NormalizedProps = Record<string, NormalizedProp>
 export type NormalizedPropsOptions = [NormalizedProps, string[]] | []
 

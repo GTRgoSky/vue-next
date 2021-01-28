@@ -37,9 +37,9 @@ if (__DEV__) {
           : {}
 
   globalObject.__VUE_HMR_RUNTIME__ = {
-    createRecord: tryWrap(createRecord),
-    rerender: tryWrap(rerender),
-    reload: tryWrap(reload)
+    createRecord: tryWrap(createRecord), // FX-- 记录一个组件
+    rerender: tryWrap(rerender), // 重新渲染某个组件。
+    reload: tryWrap(reload) // 重新渲染挂载一个组件
   } as HMRRuntime
 }
 
