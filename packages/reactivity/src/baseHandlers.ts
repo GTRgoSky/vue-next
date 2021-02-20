@@ -22,9 +22,12 @@ import {
   hasChanged,
   isArray,
   isIntegerKey,
-  extend
+  extend,
+  makeMap
 } from '@vue/shared'
 import { isRef } from './ref'
+
+const isNonTrackableKeys = /*#__PURE__*/ makeMap(`__proto__,__v_isRef,__isVue`)
 
 // 提取 Symbol 对象中的 以symbol为key的 值
 const builtInSymbols = new Set(
@@ -95,7 +98,7 @@ function createGetter(isReadonly = false, shallow = false) {
     if (
       isSymbol(key)
         ? builtInSymbols.has(key as symbol)
-        : key === `__proto__` || key === `__v_isRef`
+        : isNonTrackableKeys(key)
     ) {
       return res
     }
