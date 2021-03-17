@@ -572,7 +572,7 @@ function setupStatefulComponent(
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
-  // 判断是否是 Composition API
+  // 判断是否是 Composition API 是否包含 FX-setup
   const { setup } = Component
   if (setup) {
     const setupContext = (instance.setupContext =
