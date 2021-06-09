@@ -1421,6 +1421,7 @@ function baseCreateRenderer(
         instance.update()
       }
     } else {
+      // 不需要更新组件数直接复制属性
       // no update needed. just copy over properties
       n2.component = n1.component
       n2.el = n1.el
@@ -1853,6 +1854,8 @@ function baseCreateRenderer(
   }
 
   // can be all-keyed or mixed
+  // 双端对比 + 最长递增子序列
+  // 双端的目的就是预判--减少diff操作
   const patchKeyedChildren = (
     c1: VNode[],
     c2: VNodeArrayChildren,
@@ -1872,6 +1875,7 @@ function baseCreateRenderer(
     // 1. sync from start
     // (a b) c
     // (a b) d e
+    // 从头部对比到第一个不相同的点
     while (i <= e1 && i <= e2) {
       const n1 = c1[i]
       const n2 = (c2[i] = optimized
@@ -1898,6 +1902,7 @@ function baseCreateRenderer(
     // 2. sync from end
     // a (b c)
     // d e (b c)
+    // 从尾部开始对比到第一个不相同的点
     while (i <= e1 && i <= e2) {
       const n1 = c1[e1]
       const n2 = (c2[e2] = optimized
@@ -1929,6 +1934,7 @@ function baseCreateRenderer(
     // (a b)
     // c (a b)
     // i = 0, e1 = -1, e2 = 0
+    // 如果需要增加（新节点长度更长）--mount
     if (i > e1) {
       if (i <= e2) {
         const nextPos = e2 + 1
@@ -1959,6 +1965,7 @@ function baseCreateRenderer(
     // a (b c)
     // (b c)
     // i = 0, e1 = 0, e2 = -1
+    // 如果需要减少（新节点更少）-- unmount
     else if (i > e2) {
       while (i <= e1) {
         unmount(c1[i], parentComponent, parentSuspense, true)
@@ -1970,6 +1977,7 @@ function baseCreateRenderer(
     // [i ... e1 + 1]: a b [c d e] f g
     // [i ... e2 + 1]: a b [e d c h] f g
     // i = 2, e1 = 4, e2 = 5
+    // 不确定的开始算法（最长递增子序列）
     else {
       const s1 = i // prev starting index
       const s2 = i // next starting index
@@ -2057,7 +2065,7 @@ function baseCreateRenderer(
       // 5.3 move and mount
       // generate longest stable subsequence only when nodes have moved
       const increasingNewIndexSequence = moved
-        ? getSequence(newIndexToOldIndexMap)
+        ? getSequence(newIndexToOldIndexMap) // 真正实现最长递增子序列
         : EMPTY_ARR
       j = increasingNewIndexSequence.length - 1
       // looping backwards so that we can use last patched node as anchor
@@ -2491,6 +2499,7 @@ export function traverseStaticChildren(n1: VNode, n2: VNode, shallow = false) {
 }
 
 // https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+// 贪心 + 二分 （或者动态规划）
 function getSequence(arr: number[]): number[] {
   const p = arr.slice()
   const result = [0]
