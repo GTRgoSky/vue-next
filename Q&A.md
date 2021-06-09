@@ -46,3 +46,7 @@
 ## 如何兼容Vue2.0
 
 # ShapeFlags 和 PatchFlags 区别
+
+ShapeFlags： dom节点类型
+
+PatchFlags： dom上属性的类型

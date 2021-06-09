@@ -420,7 +420,7 @@ function baseCreateRenderer(
   createHydrationFns: typeof createHydrationFunctions
 ): HydrationRenderer
 
-// implementation
+// implementation - 执行-重要
 function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
@@ -431,6 +431,7 @@ function baseCreateRenderer(
   }
 
   // 映射-dom中的方法【packages/runtime-dom/src/nodeOps.ts】 如果想通过core 重写编译能力，将方法一一映射。
+  // 根据你传入的api来获取对应能力（比如传入浏览器就是浏览器能力，传入小程序就是小程序能力）
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -463,7 +464,7 @@ function baseCreateRenderer(
   ) => {
     // patching & not same type, unmount old tree
     if (n1 && !isSameVNodeType(n1, n2)) {
-      // 如果新老节点不同 卸载老节点？
+      // 如果新老节点不同 卸载老节点--直接替换成为新节点
       anchor = getNextHostNode(n1)
       unmount(n1, parentComponent, parentSuspense, true)
       n1 = null
@@ -480,17 +481,17 @@ function baseCreateRenderer(
       case Text: // 文本节点
         processText(n1, n2, container, anchor)
         break
-      case Comment:
+      case Comment: // 评论
         processCommentNode(n1, n2, container, anchor)
         break
-      case Static:
+      case Static: // 静态组件
         if (n1 == null) {
           mountStaticNode(n2, container, anchor, isSVG)
         } else if (__DEV__) {
           patchStaticNode(n1, n2, container, isSVG)
         }
         break
-      case Fragment:
+      case Fragment: // 不止一个节点
         processFragment(
           n1,
           n2,
@@ -504,7 +505,7 @@ function baseCreateRenderer(
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
-          // element
+          // element -- 标签
           processElement(
             n1,
             n2,
@@ -562,6 +563,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 文本节点替换
   const processText: ProcessTextOrCommentFn = (n1, n2, container, anchor) => {
     if (n1 == null) {
       hostInsert(
@@ -2221,7 +2223,8 @@ function baseCreateRenderer(
   }
 
   // Vdom - DOM
-  // container - 宿主函数
+  // container - 宿主函数(？也就是实例？)
+  //
   const render: RootRenderFunction = (vnode, container) => {
     if (vnode == null) {
       if (container._vnode) {
